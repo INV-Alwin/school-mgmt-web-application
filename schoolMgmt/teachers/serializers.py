@@ -12,6 +12,24 @@ class TeacherSerializer(serializers.ModelSerializer):
             'subject_specialization', 'employee_id', 'date_of_joining', 'status'
         ]
 
+    def validate_employee_id(self, value):
+        if Teacher.objects.filter(employee_id=value).exists():
+            raise serializers.ValidationError("Employee ID must be unique.")
+        return value
+
+    def validate_email(self, value):
+        email = value.get('email') if isinstance(value, dict) else value
+        if User.objects.filter(email=email).exists():
+            raise serializers.ValidationError("Email already in use.")
+        return value
+    
+    def validate_phone_number(self, value):
+        if not value.isdigit() or len(value) != 10:
+            raise serializers.ValidationError("Phone number must be 10 digits.")
+        return value
+
+
+
     def create(self, validated_data):
         user_data = validated_data.pop('user')
         user = User.objects.create_user(

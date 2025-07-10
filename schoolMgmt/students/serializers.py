@@ -13,6 +13,23 @@ class StudentSerializer(serializers.ModelSerializer):
             'status', 'assigned_teacher'
         ]
 
+    def validate_roll_number(self, value):
+        if Student.objects.filter(roll_number=value).exists():
+            raise serializers.ValidationError("Roll number must be unique.")
+        return value
+
+    def validate_email(self, value):
+        email = value.get('email') if isinstance(value, dict) else value
+        if User.objects.filter(email=email).exists():
+            raise serializers.ValidationError("Email already in use.")
+        return value
+    
+    def validate_phone_number(self, value):
+        if not value.isdigit() or len(value) != 10:
+            raise serializers.ValidationError("Phone number must be 10 digits.")
+        return value
+
+
     def create(self, validated_data):
         user_data = validated_data.pop('user')
         user = User.objects.create_user(
