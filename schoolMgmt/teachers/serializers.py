@@ -1,25 +1,24 @@
 from rest_framework import serializers
-from .models import Student
+from .models import Teacher
 from users.models import User
 
-class StudentSerializer(serializers.ModelSerializer):
+class TeacherSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(source='user.email', required=True)
 
     class Meta:
-        model = Student
+        model = Teacher
         fields = [
             'id', 'first_name', 'last_name', 'email', 'phone_number',
-            'roll_number', 'class_name', 'date_of_birth', 'admission_date',
-            'status', 'assigned_teacher'
+            'subject_specialization', 'employee_id', 'date_of_joining', 'status'
         ]
 
     def create(self, validated_data):
         user_data = validated_data.pop('user')
         user = User.objects.create_user(
-            username=user_data['email'],
+            username=user_data['email'],  # can use email as username
             email=user_data['email'],
-            password="student@123",
-            role='student'
+            password="teacher@123",       # set default password (should force change)
+            role='teacher'
         )
-        student = Student.objects.create(user=user, **validated_data)
-        return student
+        teacher = Teacher.objects.create(user=user, **validated_data)
+        return teacher
