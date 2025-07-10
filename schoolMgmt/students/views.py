@@ -9,10 +9,12 @@ from users.models import User
 from .models import Student
 from .serializers import StudentSerializer
 from rest_framework import status
+from users.permissions import IsAdminOrTeacherReadOnly
 
 class StudentViewSet(viewsets.ModelViewSet):
+    queryset = Student.objects.all()
     serializer_class = StudentSerializer
-    permission_classes = [IsAdminOrTeacher]
+    permission_classes = [IsAdminOrTeacherReadOnly]
 
     def get_queryset(self):
         user = self.request.user

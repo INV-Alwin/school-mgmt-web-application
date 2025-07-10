@@ -1,15 +1,18 @@
+# teachers/serializers.py
+
 from rest_framework import serializers
 from .models import Teacher
 from users.models import User
+from users.serializers import UserSerializer
 
 class TeacherSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField(source='user.email', required=True)
+    user = UserSerializer()
 
     class Meta:
         model = Teacher
         fields = [
-            'id', 'first_name', 'last_name', 'email', 'phone_number',
-            'subject_specialization', 'employee_id', 'date_of_joining', 'status'
+            'id', 'user', 'subject_specialization',
+            'employee_id', 'date_of_joining', 'status'
         ]
 
     def validate_employee_id(self, value):
@@ -17,26 +20,29 @@ class TeacherSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Employee ID must be unique.")
         return value
 
-    def validate_email(self, value):
-        email = value.get('email') if isinstance(value, dict) else value
+    def validate(self, attrs):
+        user_data = attrs.get("user", {})
+        email = user_data.get("email")
+        phone = user_data.get("phone_number")
+
         if User.objects.filter(email=email).exists():
-            raise serializers.ValidationError("Email already in use.")
-        return value
-    
-    def validate_phone_number(self, value):
-        if not value.isdigit() or len(value) != 10:
-            raise serializers.ValidationError("Phone number must be 10 digits.")
-        return value
+            raise serializers.ValidationError({"email": "Email already in use."})
 
+        if not phone.isdigit() or len(phone) != 10:
+            raise serializers.ValidationError({"phone_number": "Phone number must be 10 digits."})
 
+        return attrs
 
     def create(self, validated_data):
         user_data = validated_data.pop('user')
         user = User.objects.create_user(
-            username=user_data['email'],  # can use email as username
+            username=user_data['email'],
             email=user_data['email'],
-            password="teacher@123",       # set default password (should force change)
-            role='teacher'
+            password='teacher@123',
+            role='teacher',
+            first_name=user_data['first_name'],
+            last_name=user_data['last_name'],
+            phone_number=user_data['phone_number']
         )
         teacher = Teacher.objects.create(user=user, **validated_data)
         return teacher

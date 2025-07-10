@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'users',
     'teachers',
     'students',
+    'drf_yasg',
 ]
 
 AUTH_USER_MODEL = 'users.User'
