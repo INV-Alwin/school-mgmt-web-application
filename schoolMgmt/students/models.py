@@ -8,7 +8,7 @@ class Student(models.Model):
     student_class = models.CharField(max_length=50)
     date_of_birth = models.DateField()
     admission_date = models.DateField()
-    status = models.CharField(max_length=10, choices=[('Active', 'Active'), ('Inactive', 'Inactive')])
+    status = models.CharField(max_length=10, choices=[('active', 'Active'), ('inactive', 'Inactive')])
     assigned_teacher = models.ForeignKey('teachers.Teacher', on_delete=models.SET_NULL, null=True, blank=True)
 
 
