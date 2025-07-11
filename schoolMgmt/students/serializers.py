@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import Student
 from users.models import User
-from users.serializers import UserSerializer  # assuming this exists
+from users.serializers import UserSerializer  
 
 class StudentSerializer(serializers.ModelSerializer):
     user = UserSerializer()
