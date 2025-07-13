@@ -1,4 +1,4 @@
-from rest_framework import viewsets
+from rest_framework import viewsets,status
 from .models import Student
 from .serializers import StudentSerializer
 from users.permissions import IsAdmin
@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from users.models import User
+from teachers.models import Teacher
 from .models import Student
 from .serializers import StudentSerializer
 from rest_framework import status
@@ -13,6 +14,7 @@ from users.permissions import IsAdminOrTeacherReadOnly
 from rest_framework.permissions import IsAdminUser
 from django.http import HttpResponse
 import csv
+import io
 
 class StudentViewSet(viewsets.ModelViewSet):
     queryset = Student.objects.all()
@@ -26,6 +28,54 @@ class StudentViewSet(viewsets.ModelViewSet):
         elif user.role == 'teacher':
             return Student.objects.filter(assigned_teacher__user=user)
         return Student.objects.none()
+
+class ImportStudentsCSV(APIView):
+    permission_classes = [IsAdmin]
+
+    def post(self, request, *args, **kwargs):
+        file = request.FILES.get('file')
+        if not file:
+            return Response({'error': 'No file uploaded'}, status=status.HTTP_400_BAD_REQUEST)
+
+        decoded_file = file.read().decode('utf-8')
+        reader = csv.DictReader(io.StringIO(decoded_file))
+
+        created_count = 0
+        for row in reader:
+            if User.objects.filter(email=row['email']).exists():
+                continue  # Skip if email already exists
+
+            user = User.objects.create_user(
+                username=row['email'],
+                email=row['email'],
+                password='student@123',
+                role='student',
+                first_name=row['first_name'],
+                last_name=row['last_name'],
+                phone_number=row['phone_number']
+            )
+
+            # Find teacher by employee_id
+            try:
+                teacher = Teacher.objects.get(employee_id=row['assigned_teacher'])
+            except Teacher.DoesNotExist:
+                user.delete()
+                continue  # Skip student if assigned teacher not found
+
+            Student.objects.create(
+                user=user,
+                roll_number=row['roll_number'],
+                student_class=row['student_class'],
+                date_of_birth=row['date_of_birth'],
+                admission_date=row['admission_date'],
+                status=row['status'].lower(),
+                assigned_teacher=teacher
+            )
+
+            created_count += 1
+
+        return Response({'message': f'Successfully imported {created_count} students'}, status=status.HTTP_201_CREATED)
+
     
 class StudentMeView(APIView):
     permission_classes = [IsAuthenticated]
