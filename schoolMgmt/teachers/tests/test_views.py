@@ -32,7 +32,7 @@ class TeacherViewTests(APITestCase):
         self.teacher = Teacher.objects.create(**self.teacher_data)
 
     def test_list_teachers(self):
-        url = reverse("teacher-list")  # based on DRF router name
+        url = reverse("teacher-list")  
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIsInstance(response.data, list)
@@ -40,7 +40,7 @@ class TeacherViewTests(APITestCase):
     def test_create_teacher(self):
         url = reverse("teacher-list")
         response = self.client.post(url, data=self.teacher_data, format='json')
-        self.assertIn(response.status_code, [status.HTTP_201_CREATED, status.HTTP_400_BAD_REQUEST])  # may fail if user is reused
+        self.assertIn(response.status_code, [status.HTTP_201_CREATED, status.HTTP_400_BAD_REQUEST])  
 
     def test_retrieve_teacher(self):
         url = reverse("teacher-detail", kwargs={"pk": self.teacher.pk})

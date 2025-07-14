@@ -7,12 +7,19 @@ class IsAdmin(permissions.BasePermission):
             (request.user.role == 'admin' or request.user.is_superuser)
         )
 
-'''class IsAdminOrTeacher(permissions.BasePermission):
+class IsAdminOrTeacher(permissions.BasePermission):
     def has_permission(self, request, view):
         return (
             request.user.is_authenticated and 
-            (request.user.role in ['admin', 'teacher'] or request.user.is_superuser)
-        )'''
+            (request.user.role in ['admin', 'teacher','student'] or request.user.is_superuser)
+        )
+    
+class IsStudent(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return (
+            request.user.is_authenticated and 
+            (request.user.role in ['student'] or request.user.is_superuser)
+        )
 
 class IsAdminOrTeacherReadOnly(permissions.BasePermission):
     def has_permission(self, request, view):

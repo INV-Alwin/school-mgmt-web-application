@@ -55,12 +55,12 @@ class ImportStudentsCSV(APIView):
                 phone_number=row['phone_number']
             )
 
-            # Find teacher by employee_id
+            
             try:
                 teacher = Teacher.objects.get(employee_id=row['assigned_teacher'])
             except Teacher.DoesNotExist:
                 user.delete()
-                continue  # Skip student if assigned teacher not found
+                continue  
 
             Student.objects.create(
                 user=user,
