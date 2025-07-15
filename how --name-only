@@ -1,0 +1,20 @@
+[33mcommit ba43b91dac4d80b48019510a2b4b1cf90472f36f[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeatures[m[33m, [m[1;31morigin/features[m[33m)[m
+Author: Alwin Yesudas <alwin.yesudas@innovaturelabs.com>
+Date:   Mon Jul 14 18:32:37 2025 +0530
+
+    Testing in progrress
+
+schoolMgmt/.coverage
+schoolMgmt/exams/tests/__init__.py
+schoolMgmt/exams/tests/test_views.py
+schoolMgmt/students/tests/test_models.py
+schoolMgmt/students/tests/test_serializers.py
+schoolMgmt/teachers/serializers.py
+schoolMgmt/teachers/tests/test_models.py
+schoolMgmt/teachers/tests/test_permissions.py
+schoolMgmt/teachers/tests/test_serializers.py
+schoolMgmt/teachers/tests/test_views.py
+schoolMgmt/users/tests/__init__.py
+schoolMgmt/users/tests/test_models.py
+schoolMgmt/users/tests/test_permissions.py
+schoolMgmt/users/tests/test_serializers.py
